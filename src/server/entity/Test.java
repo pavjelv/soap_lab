@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Test implements Serializable {
-
     private String name;
     private Map<String,Question> questions = new HashMap<>();
     private Question[] questionTransport = new Question[5];
-    private int questionsCount = 0;
+    private transient int questionsCount = 0;
 
     public Test() {
 
@@ -65,9 +64,29 @@ public class Test implements Serializable {
         this.name = name;
     }
 
+    public Map<String, Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(Map<String, Question> questions) {
+        this.questions = questions;
+    }
+
+    public Question[] getQuestionTransport() {
+        return questionTransport;
+    }
+
+    public void setQuestionTransport(Question[] questionTransport) {
+        this.questionTransport = questionTransport;
+    }
+
+    public int getQuestionsCount() {
+        return questionsCount;
+    }
+
     @Override
     public String toString() {
-        return "Test: " + name + "questions: " + questionsCount;
+        return "Test: " + name + " questions: " + questionsCount;
     }
 
 }

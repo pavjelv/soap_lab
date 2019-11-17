@@ -26,24 +26,6 @@ public final class TestFacade {
         }
     }
 
-//    public TestFacade() {
-//
-//        Test test = new Test("TEST");
-//        test.addQuestion(new Question("QQQQ", "12222"));
-//        test.addQuestion(new Question("ddddd", "12233"));
-//
-//        Test secondTest = new Test("TEST1");
-//        secondTest.addQuestion(new Question("QQQQ1", "1"));
-//
-//        System.out.println("Test add: " + testService.addTest(test));
-//        System.out.println("Second test add: " + testService.addTest(secondTest));
-//
-//        Test[] list = testService.getAllTests();
-//        for (Test t : list) {
-//            System.out.println(t.toString());
-//        }
-//    }
-
     public static void addTest(Test test) {
         service.addTest(test);
     }
@@ -70,5 +52,17 @@ public final class TestFacade {
 
     public static void updateTest(Test test) {
         service.updateTest(test);
+    }
+
+    public static Question[] getQuestions(Test test) {
+        return service.getQuestions(test.getName());
+    }
+
+    public static void addQuestions(Test test, Question[] questions) {
+        service.addQuestions(questions, test.getName());
+    }
+
+    public static void addQuestion(Test test, Question question) {
+        service.addQuestion(question, test.getName());
     }
 }

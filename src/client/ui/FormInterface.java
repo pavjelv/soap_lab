@@ -6,9 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -17,24 +14,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import server.entity.Question;
-import server.entity.Student;
 import server.entity.Test;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.*;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
+import java.util.ArrayList;
 
 public class FormInterface {
     private Stage stage;
@@ -42,11 +25,10 @@ public class FormInterface {
     private double height = 275;
 
     private Test[] tests = new Test[0];
-    private GameBoard gameBoard;
 
     private JPanel panel;
 
-    public FormInterface(Stage stage ){
+    public FormInterface(Stage stage) {
         this.stage = stage;
         start();
     }
@@ -61,8 +43,7 @@ public class FormInterface {
     }
 
     public void registration() {
-
-        setWindowSize(width, height);
+        setWindowSize(400, 500);
         stage.setTitle("Testing system");
 
         GridPane grid = new GridPane();
@@ -71,9 +52,9 @@ public class FormInterface {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Text scene_title = new Text("Welcome");
-        scene_title.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        grid.add(scene_title, 0, 0, 2, 1);
+        Text sceneTitle = new Text("Welcome");
+        sceneTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        grid.add(sceneTitle, 0, 0, 2, 1);
 
         Label userName = new Label("User Role:");
         grid.add(userName, 0, 1);
@@ -97,7 +78,7 @@ public class FormInterface {
         stage.show();
     }
 
-    public GridPane showCreateGrid (GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView) {
+    public GridPane showCreateGrid(GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView, HBox previousTop) {
         GridPane createGrid = new GridPane();
         createGrid.setAlignment(Pos.CENTER);
         createGrid.setHgap(10);
@@ -121,6 +102,7 @@ public class FormInterface {
         okBtn.setPrefSize(90, 20);
         okBtn.setOnMouseClicked(userConfirm -> {
             TestFacade.createAndAddTest(testTextField.getText());
+            previousPane.setTop(previousTop);
             previousPane.setCenter(previousGrid);
             previousPane.setBottom(previousBottom);
             listView.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
@@ -128,21 +110,154 @@ public class FormInterface {
         hBox.getChildren().addAll(okBtn);
 
         Button leaveBtn = new Button("Leave");
-        leaveBtn.setOnMouseClicked(event -> stage.setScene(stage.getScene()));
+        leaveBtn.setOnMouseClicked(event -> {
+            previousPane.setTop(previousTop);
+            previousPane.setCenter(previousGrid);
+            previousPane.setBottom(previousBottom);
+        });
         leaveBtn.setPrefSize(90, 20);
         hBox.getChildren().add(leaveBtn);
         createGrid.add(hBox, 1, 5);
         return createGrid;
     }
 
+    public GridPane showAddQuestion(GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView, HBox previousTop, Test selectedTest) {
+        GridPane createGrid = new GridPane();
+        createGrid.setAlignment(Pos.CENTER);
+        createGrid.setHgap(10);
+        createGrid.setPadding(new Insets(10, 20, 10, 20));
+        createGrid.setVgap(20);
+        int gridRowIndex = 0;
+
+        Text createTitle = new Text("Create question for " + selectedTest.getName());
+        createTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        createGrid.add(createTitle, 0, gridRowIndex++, 2, 1);
+
+        Label testName = new Label("Question name:");
+        createGrid.add(testName, 0, gridRowIndex++);
+
+        TextField questionNameField = new TextField();
+        questionNameField.setText("Question 1");
+        createGrid.add(questionNameField, 0, gridRowIndex++);
+
+        HBox hBox = new HBox();
+        hBox.setSpacing(10);
+        hBox.setPadding(new Insets(20, 20, 30, 20));
+        hBox.setAlignment(Pos.CENTER);
+
+        Label createdQuestionsLabel = new Label("Created questions:");
+        createGrid.add(createdQuestionsLabel, 0, gridRowIndex++);
+
+        ListView<String> list = new ListView<>();
+        Question[] existingQuestions = selectedTest.getAllQuestions();
+        ArrayList<String> qNames = new ArrayList<>();
+        for (Question existingQuestion : existingQuestions) {
+            if (existingQuestion != null && existingQuestion.getQuestionText() != null) {
+                qNames.add(existingQuestion.getQuestionText());
+            }
+        }
+        list.setItems(FXCollections.observableArrayList(qNames));
+        createGrid.add(list, 0, gridRowIndex++);
+
+
+        Button okBtn = new Button("Create");
+        okBtn.setPrefSize(90, 20);
+        okBtn.setOnMouseClicked(userConfirm -> {
+            TestFacade.addQuestion(selectedTest, new Question(questionNameField.getText()));
+            previousPane.setTop(previousTop);
+            previousPane.setCenter(previousGrid);
+            previousPane.setBottom(previousBottom);
+            listView.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
+        });
+        hBox.getChildren().addAll(okBtn);
+
+        Button backBtn = new Button("Back");
+        backBtn.setOnMouseClicked(event -> {
+            previousPane.setTop(previousTop);
+            previousPane.setCenter(previousGrid);
+            previousPane.setBottom(previousBottom);
+        });
+        backBtn.setPrefSize(90, 20);
+        hBox.getChildren().add(backBtn);
+        createGrid.add(hBox, 1, gridRowIndex);
+        return createGrid;
+    }
+
+    public GridPane showPreviewTest(GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView, HBox previousTop, Test selectedTest) {
+        GridPane createGrid = new GridPane();
+        createGrid.setAlignment(Pos.CENTER);
+        createGrid.setHgap(10);
+        createGrid.setPadding(new Insets(10, 20, 10, 20));
+        createGrid.setVgap(20);
+        int gridRowIndex = 0;
+
+        Text createTitle = new Text("Test info: " + selectedTest.getName());
+        createTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        createGrid.add(createTitle, 0, gridRowIndex++, 2, 1);
+
+        HBox hBox = new HBox();
+        hBox.setSpacing(10);
+        hBox.setPadding(new Insets(20, 20, 30, 20));
+        hBox.setAlignment(Pos.CENTER);
+
+        Label createdQuestionsLabel = new Label("Created questions:");
+        createGrid.add(createdQuestionsLabel, 0, gridRowIndex++);
+
+        ListView<String> list = new ListView<>();
+        Question[] existingQuestions = selectedTest.getAllQuestions();
+        ArrayList<String> qNames = new ArrayList<>();
+        for (Question existingQuestion : existingQuestions) {
+            if (existingQuestion != null && existingQuestion.getQuestionText() != null) {
+                qNames.add(existingQuestion.getQuestionText());
+            }
+        }
+        list.setItems(FXCollections.observableArrayList(qNames));
+        createGrid.add(list, 0, gridRowIndex);
+
+
+        Button modifyQuestionButton = new Button("Modify Question");
+        createGrid.add(modifyQuestionButton, 1, gridRowIndex++);
+        modifyQuestionButton.setOnMouseClicked(onSelect -> {
+            int selectedIndex = list.getSelectionModel().getSelectedIndex();
+            if(selectedIndex >= 0) {
+                Question selectedQuestion = selectedTest.getAllQuestions()[selectedIndex];
+                System.out.println(selectedQuestion);
+            }
+        });
+
+
+        Button okBtn = new Button("Create");
+        okBtn.setPrefSize(90, 20);
+        okBtn.setOnMouseClicked(userConfirm -> {
+            previousPane.setTop(previousTop);
+            previousPane.setCenter(previousGrid);
+            previousPane.setBottom(previousBottom);
+            listView.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
+        });
+        hBox.getChildren().addAll(okBtn);
+
+        Button backBtn = new Button("Back");
+        backBtn.setOnMouseClicked(event -> {
+            previousPane.setTop(previousTop);
+            previousPane.setCenter(previousGrid);
+            previousPane.setBottom(previousBottom);
+        });
+        backBtn.setPrefSize(90, 20);
+        hBox.getChildren().add(backBtn);
+        createGrid.add(hBox, 1, gridRowIndex);
+        return createGrid;
+    }
+
     public void showTeacherPanel() {
         Button modifyTestBtn = new Button("Modify test");
         Button createBtn = new Button("Create test");
+        Button previewTestBtn = new Button("Preview Test");
         HBox hBox = new HBox();
         hBox.setSpacing(10);
         hBox.setPadding(new Insets(10, 5, 5, 10));
         hBox.getChildren().add(modifyTestBtn);
         hBox.getChildren().add(createBtn);
+        hBox.getChildren().add(previewTestBtn);
 
         GridPane joinGrid = new GridPane();
         joinGrid.setAlignment(Pos.CENTER);
@@ -150,16 +265,13 @@ public class FormInterface {
         joinGrid.setVgap(10);
         joinGrid.setPadding(new Insets(20, 20, 10, 10));
 
-        Text joinTitle = new Text("Join room");
+        Text joinTitle = new Text("Existing tests");
         joinTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         joinGrid.add(joinTitle, 0, 0, 2, 1);
 
-        Button okBtn = new Button("OK");
-        okBtn.setPrefSize(50, 20);
         HBox hBoxBtn = new HBox();
         hBoxBtn.setPadding(new Insets(20, 20, 30, 20));
         hBoxBtn.setAlignment(Pos.CENTER);
-        hBoxBtn.getChildren().add(okBtn);
 
         Button exit = new Button("exit");
         exit.setPrefSize(50, 20);
@@ -173,66 +285,38 @@ public class FormInterface {
 
         ListView<String> list = new ListView<>();
         list.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
+        joinGrid.add(list, 0, 1);
 
         exit.setOnMouseClicked(event1 -> stage.close());
 
         createBtn.setOnMouseClicked(event -> {
-            borderPane.setCenter(showCreateGrid(joinGrid, borderPane, hBoxBtn, list));
+            borderPane.setTop(new HBox());
+            borderPane.setCenter(showCreateGrid(joinGrid, borderPane, hBoxBtn, list, hBox));
             borderPane.setBottom(new HBox());
         });
 
-        modifyTestBtn.setOnMouseClicked( event2 ->  {
+        modifyTestBtn.setOnMouseClicked(event2 -> {
             String selectedTest = list.getSelectionModel().getSelectedItem();
-            if(selectedTest != null) {
+            if (selectedTest != null) {
                 Test test = TestFacade.getTestByName(selectedTest);
-                test.addQuestion(new Question("NAPAS"));
-                TestFacade.updateTest(test);
+                borderPane.setTop(new HBox());
+                borderPane.setCenter(showAddQuestion(joinGrid, borderPane, hBoxBtn, list, hBox, test));
+                borderPane.setBottom(new HBox());
             }
         });
 
-        joinGrid.add(list, 0, 1);
-
-        okBtn.setOnMouseClicked( event -> {
-                    stage.hide();
-                    gameBoard = new GameBoard();
-                    gameBoard.setVisible(true);
+        previewTestBtn.setOnMouseClicked(event -> {
+            String selectedTest = list.getSelectionModel().getSelectedItem();
+            if (selectedTest != null) {
+                Test test = TestFacade.getTestByName(selectedTest);
+                borderPane.setTop(new HBox());
+                borderPane.setCenter(showPreviewTest(joinGrid, borderPane, hBoxBtn, list, hBox, test));
+                borderPane.setBottom(new HBox());
+            }
         });
 
         Scene scene = new Scene(borderPane, width, height);
         stage.setScene(scene);
         stage.show();
-    }
-
-
-    public class GameBoard extends JFrame {
-        public GameBoard(){
-            super("Passeng_Korid");
-            initUI();
-        }
-        private void initUI() {
-            setSize(540, 600);
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
-            panel = new GPanel();
-            add(panel);
-        }
-
-        public class GPanel extends JPanel {
-            public GPanel() {
-                setPreferredSize(new Dimension(540, 600));
-                MouseAdapter mouseHandler;
-                mouseHandler = new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        repaint();
-                    }
-                };
-                addMouseListener(mouseHandler);
-            }
-
-            @Override
-            public void paintComponent(Graphics graphics) {
-                super.paintComponent(graphics);
-            }
-        }
     }
 }

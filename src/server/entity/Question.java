@@ -10,6 +10,8 @@ public class Question implements Serializable {
     private boolean correctlyAnswered;
     private int optionIndex = 0;
 
+    public Question() {}
+
     public Question (String questionText, String testId) {
         this.questionText = questionText;
         this.testId = testId;
@@ -65,4 +67,11 @@ public class Question implements Serializable {
         this.correctlyAnswered = correctlyAnswered;
     }
 
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
+    }
+
+    public void setTestId(String testId) {
+        this.testId = testId;
+    }
 }

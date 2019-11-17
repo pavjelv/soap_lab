@@ -14,7 +14,7 @@ public interface TestService {
     @WebMethod
     public String addTest(Test test);
 
-    @WebMethod(operationName = "getAll")
+    @WebMethod
     public Test[] getAllTests();
 
     @WebMethod
@@ -24,11 +24,17 @@ public interface TestService {
     public Test getTestByName(String name);
 
     @WebMethod
-    public String addQuestion(String testId, Question question);
-
-    @WebMethod
     public void addOptions(String testId, String questionId, Option [] options);
 
     @WebMethod
     public void updateTest (Test test);
+
+    @WebMethod
+    public Question[] getQuestions(String testName);
+
+    @WebMethod
+    public void addQuestions(Question[] questions, String testName);
+
+    @WebMethod
+    public void addQuestion(Question question, String testName);
 }

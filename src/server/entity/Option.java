@@ -8,6 +8,8 @@ public class Option implements Serializable {
     private int addPoints;
     private int removePoints;
 
+    public Option() {}
+
     public Option(String optionName, boolean isCorrect, int addPoints, int removePoints) {
         this.optionName = optionName;
         this.isCorrect = isCorrect;
@@ -29,5 +31,21 @@ public class Option implements Serializable {
 
     public int getRemovePoints() {
         return removePoints;
+    }
+
+    public void setOptionName(String optionName) {
+        this.optionName = optionName;
+    }
+
+    public void setCorrect(boolean correct) {
+        isCorrect = correct;
+    }
+
+    public void setAddPoints(int addPoints) {
+        this.addPoints = addPoints;
+    }
+
+    public void setRemovePoints(int removePoints) {
+        this.removePoints = removePoints;
     }
 }

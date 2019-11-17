@@ -26,9 +26,10 @@ public class TestServiceImpl implements TestService {
         Test[] result = new Test[testMap.size()];
         int i = 0;
         for (Test value : testMap.values()) {
-            value.addQuestion(new Question("AAAAAAAAA"));
+            System.out.println(value);
             result[i++] = value;
         }
+        System.out.println();
         return result;
     }
 
@@ -48,17 +49,36 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    public Question[] getQuestions(String testName) {
+        Test existingTest = getTestByName(testName);
+        System.out.println("Fetched test " + existingTest);
+        Question[] returnQuestions =  getTestByName(testName).getAllQuestions();
+        for (Question question : returnQuestions) {
+            if(question != null) {
+                System.out.println("Existing question for " + testName + " " + question.getQuestionText());
+            }
+        }
+        System.out.println();
+        return returnQuestions;
+    }
+
+    @Override
     public void updateTest(Test test) {
         getTestByName(test.getName()).addQuestions(Arrays.asList(test.getAllQuestions()));
     }
 
     @Override
-    public String addQuestion(String testId, Question question) {
-        return testMap.get(testId).addQuestion(question);
+    public void addOptions(String testId, String questionId, Option [] options) {
+        testMap.get(testId).getQuestion(questionId).addOptions(options);
     }
 
     @Override
-    public void addOptions(String testId, String questionId, Option [] options) {
-        testMap.get(testId).getQuestion(questionId).addOptions(options);
+    public void addQuestions(Question[] questions, String testName) {
+        getTestByName(testName).addQuestions(Arrays.asList(questions));
+    }
+
+    @Override
+    public void addQuestion(Question question, String testName) {
+        getTestByName(testName).addQuestion(question);
     }
 }
