@@ -4,6 +4,7 @@ import client.TestFacade;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -13,6 +14,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import server.entity.Printable;
 import server.entity.Question;
 import server.entity.Test;
 
@@ -46,14 +48,9 @@ public class FormInterface {
         setWindowSize(400, 500);
         stage.setTitle("Testing system");
 
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
+        GridPane grid = createGrid();
 
-        Text sceneTitle = new Text("Welcome");
-        sceneTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        Text sceneTitle = createText("Welcome");
         grid.add(sceneTitle, 0, 0, 2, 1);
 
         Label userName = new Label("User Role:");
@@ -63,29 +60,70 @@ public class FormInterface {
         comboBox.getItems().addAll("Teacher", "Student");
         grid.add(comboBox, 1, 1);
 
-        Button btn = new Button("Sign in");
-        btn.setDefaultButton(true);
-        HBox hbBtn = new HBox(10);
-        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-
+        Button btn = createButtonWithTitle("Sign in");
         btn.setOnAction(event -> showTeacherPanel());
 
-        hbBtn.getChildren().add(btn);
-        grid.add(hbBtn, 1, 4);
+        grid.add(createHboxAndAppendButtons(btn), 1, 4);
 
         Scene scene = new Scene(grid, width, height);
         stage.setScene(scene);
         stage.show();
     }
 
-    public GridPane showCreateGrid(GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView, HBox previousTop) {
+    private GridPane createGrid () {
         GridPane createGrid = new GridPane();
         createGrid.setAlignment(Pos.CENTER);
         createGrid.setHgap(10);
-        createGrid.setVgap(10);
-        Text createTitle = new Text("Create test");
-        createTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        createGrid.setPadding(new Insets(10, 20, 10, 20));
+        createGrid.setVgap(20);
+        return createGrid;
+    }
+
+    private HBox createHboxAndAppendButtons (Button... buttons) {
+        HBox hBox = new HBox();
+        hBox.setSpacing(10);
+        hBox.setPadding(new Insets(20, 20, 30, 20));
+        hBox.setAlignment(Pos.CENTER);
+        hBox.getChildren().addAll(buttons);
+        return hBox;
+    }
+
+    private Button createButtonWithTitle (String title) {
+        Button btn = new Button(title);
+        btn.setPrefSize(90, 20);
+        return btn;
+    }
+
+    private Text createText (String content) {
+        Text txt = new Text(content);
+        txt.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        return txt;
+    }
+
+    private void go(BorderPane previousPane, Node previousTop, Node previousGrid, Node previousBottom) {
+        previousPane.setTop(previousTop);
+        previousPane.setCenter(previousGrid);
+        previousPane.setBottom(previousBottom);
+    }
+
+    private ListView<String> createListAndFill(Printable... items) {
+        ListView<String> list = new ListView<>();
+        ArrayList<String> qNames = new ArrayList<>();
+        for (Printable item : items) {
+            if (item != null && item.getText() != null) {
+                qNames.add(item.getText());
+            }
+        }
+        list.setItems(FXCollections.observableArrayList(qNames));
+        return list;
+    }
+
+    public GridPane showCreateGrid(GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView, HBox previousTop) {
+        GridPane createGrid = createGrid();
+
+        Text createTitle = createText("Create test");
         createGrid.add(createTitle, 0, 0, 2, 1);
+
         Label testName = new Label("Test name:");
         createGrid.add(testName, 0, 1);
 
@@ -93,44 +131,28 @@ public class FormInterface {
         testTextField.setText("Test 1");
         createGrid.add(testTextField, 1, 1);
 
-        HBox hBox = new HBox();
-        hBox.setSpacing(10);
-        hBox.setPadding(new Insets(20, 20, 30, 20));
-        hBox.setAlignment(Pos.CENTER);
-
-        Button okBtn = new Button("Create");
-        okBtn.setPrefSize(90, 20);
+        Button okBtn = createButtonWithTitle("Create");
         okBtn.setOnMouseClicked(userConfirm -> {
             TestFacade.createAndAddTest(testTextField.getText());
-            previousPane.setTop(previousTop);
-            previousPane.setCenter(previousGrid);
-            previousPane.setBottom(previousBottom);
+            go(previousPane, previousTop, previousGrid, previousBottom);
             listView.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
         });
-        hBox.getChildren().addAll(okBtn);
 
-        Button leaveBtn = new Button("Leave");
+        Button leaveBtn = createButtonWithTitle("Leave");
         leaveBtn.setOnMouseClicked(event -> {
-            previousPane.setTop(previousTop);
-            previousPane.setCenter(previousGrid);
-            previousPane.setBottom(previousBottom);
+            go(previousPane, previousTop, previousGrid, previousBottom);
         });
-        leaveBtn.setPrefSize(90, 20);
-        hBox.getChildren().add(leaveBtn);
-        createGrid.add(hBox, 1, 5);
+
+        createGrid.add(createHboxAndAppendButtons(okBtn, leaveBtn), 1, 5);
+
         return createGrid;
     }
 
     public GridPane showAddQuestion(GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView, HBox previousTop, Test selectedTest) {
-        GridPane createGrid = new GridPane();
-        createGrid.setAlignment(Pos.CENTER);
-        createGrid.setHgap(10);
-        createGrid.setPadding(new Insets(10, 20, 10, 20));
-        createGrid.setVgap(20);
+        GridPane createGrid = createGrid();
         int gridRowIndex = 0;
 
-        Text createTitle = new Text("Create question for " + selectedTest.getName());
-        createTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        Text createTitle = createText("Create question for " + selectedTest.getName());
         createGrid.add(createTitle, 0, gridRowIndex++, 2, 1);
 
         Label testName = new Label("Question name:");
@@ -140,82 +162,45 @@ public class FormInterface {
         questionNameField.setText("Question 1");
         createGrid.add(questionNameField, 0, gridRowIndex++);
 
-        HBox hBox = new HBox();
-        hBox.setSpacing(10);
-        hBox.setPadding(new Insets(20, 20, 30, 20));
-        hBox.setAlignment(Pos.CENTER);
-
         Label createdQuestionsLabel = new Label("Created questions:");
         createGrid.add(createdQuestionsLabel, 0, gridRowIndex++);
 
-        ListView<String> list = new ListView<>();
-        Question[] existingQuestions = selectedTest.getAllQuestions();
-        ArrayList<String> qNames = new ArrayList<>();
-        for (Question existingQuestion : existingQuestions) {
-            if (existingQuestion != null && existingQuestion.getQuestionText() != null) {
-                qNames.add(existingQuestion.getQuestionText());
-            }
-        }
-        list.setItems(FXCollections.observableArrayList(qNames));
+        ListView<String> list = createListAndFill(selectedTest.getAllQuestions());
         createGrid.add(list, 0, gridRowIndex++);
 
 
-        Button okBtn = new Button("Create");
-        okBtn.setPrefSize(90, 20);
+        Button okBtn = createButtonWithTitle("Create");
         okBtn.setOnMouseClicked(userConfirm -> {
             TestFacade.addQuestion(selectedTest, new Question(questionNameField.getText()));
-            previousPane.setTop(previousTop);
-            previousPane.setCenter(previousGrid);
-            previousPane.setBottom(previousBottom);
             listView.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
+            go(previousPane, previousTop, previousGrid, previousBottom);
         });
-        hBox.getChildren().addAll(okBtn);
 
-        Button backBtn = new Button("Back");
+        Button backBtn = createButtonWithTitle("Back");
         backBtn.setOnMouseClicked(event -> {
-            previousPane.setTop(previousTop);
-            previousPane.setCenter(previousGrid);
-            previousPane.setBottom(previousBottom);
+            go(previousPane, previousTop, previousGrid, previousBottom);
         });
-        backBtn.setPrefSize(90, 20);
-        hBox.getChildren().add(backBtn);
-        createGrid.add(hBox, 1, gridRowIndex);
+
+        createGrid.add(createHboxAndAppendButtons(okBtn, backBtn), 1, gridRowIndex);
         return createGrid;
     }
 
     public GridPane showPreviewTest(GridPane previousGrid, BorderPane previousPane, HBox previousBottom, ListView<String> listView, HBox previousTop, Test selectedTest) {
-        GridPane createGrid = new GridPane();
-        createGrid.setAlignment(Pos.CENTER);
-        createGrid.setHgap(10);
-        createGrid.setPadding(new Insets(10, 20, 10, 20));
-        createGrid.setVgap(20);
+        GridPane createGrid = createGrid();
         int gridRowIndex = 0;
 
-        Text createTitle = new Text("Test info: " + selectedTest.getName());
-        createTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        Text createTitle = createText("Test info: " + selectedTest.getName());
         createGrid.add(createTitle, 0, gridRowIndex++, 2, 1);
 
-        HBox hBox = new HBox();
-        hBox.setSpacing(10);
-        hBox.setPadding(new Insets(20, 20, 30, 20));
-        hBox.setAlignment(Pos.CENTER);
 
         Label createdQuestionsLabel = new Label("Created questions:");
         createGrid.add(createdQuestionsLabel, 0, gridRowIndex++);
 
-        ListView<String> list = new ListView<>();
-        Question[] existingQuestions = selectedTest.getAllQuestions();
-        ArrayList<String> qNames = new ArrayList<>();
-        for (Question existingQuestion : existingQuestions) {
-            if (existingQuestion != null && existingQuestion.getQuestionText() != null) {
-                qNames.add(existingQuestion.getQuestionText());
-            }
-        }
-        list.setItems(FXCollections.observableArrayList(qNames));
+        ListView<String> list = createListAndFill(selectedTest.getAllQuestions());
         createGrid.add(list, 0, gridRowIndex);
 
 
-        Button modifyQuestionButton = new Button("Modify Question");
+        Button modifyQuestionButton = createButtonWithTitle("Modify Question");
         createGrid.add(modifyQuestionButton, 1, gridRowIndex++);
         modifyQuestionButton.setOnMouseClicked(onSelect -> {
             int selectedIndex = list.getSelectionModel().getSelectedIndex();
@@ -225,83 +210,52 @@ public class FormInterface {
             }
         });
 
-
-        Button okBtn = new Button("Create");
-        okBtn.setPrefSize(90, 20);
+        Button okBtn = createButtonWithTitle("Create");
         okBtn.setOnMouseClicked(userConfirm -> {
-            previousPane.setTop(previousTop);
-            previousPane.setCenter(previousGrid);
-            previousPane.setBottom(previousBottom);
+            go(previousPane, previousTop, previousGrid, previousBottom);
             listView.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
         });
-        hBox.getChildren().addAll(okBtn);
 
-        Button backBtn = new Button("Back");
+        Button backBtn = createButtonWithTitle("Back");
         backBtn.setOnMouseClicked(event -> {
-            previousPane.setTop(previousTop);
-            previousPane.setCenter(previousGrid);
-            previousPane.setBottom(previousBottom);
+            go(previousPane, previousTop, previousGrid, previousBottom);
         });
-        backBtn.setPrefSize(90, 20);
-        hBox.getChildren().add(backBtn);
-        createGrid.add(hBox, 1, gridRowIndex);
+        createGrid.add(createHboxAndAppendButtons(okBtn, backBtn), 1, gridRowIndex);
         return createGrid;
     }
 
     public void showTeacherPanel() {
-        Button modifyTestBtn = new Button("Modify test");
-        Button createBtn = new Button("Create test");
-        Button previewTestBtn = new Button("Preview Test");
-        HBox hBox = new HBox();
-        hBox.setSpacing(10);
-        hBox.setPadding(new Insets(10, 5, 5, 10));
-        hBox.getChildren().add(modifyTestBtn);
-        hBox.getChildren().add(createBtn);
-        hBox.getChildren().add(previewTestBtn);
+        GridPane joinGrid = createGrid();
 
-        GridPane joinGrid = new GridPane();
-        joinGrid.setAlignment(Pos.CENTER);
-        joinGrid.setHgap(10);
-        joinGrid.setVgap(10);
-        joinGrid.setPadding(new Insets(20, 20, 10, 10));
+        Text testsTitle = new Text("Existing tests");
+        testsTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        joinGrid.add(testsTitle, 0, 0, 2, 1);
 
-        Text joinTitle = new Text("Existing tests");
-        joinTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        joinGrid.add(joinTitle, 0, 0, 2, 1);
+        Button exit = createButtonWithTitle("exit");
+        Button modifyTestBtn = createButtonWithTitle("Modify test");
+        Button createBtn = createButtonWithTitle("Create test");
+        Button previewTestBtn = createButtonWithTitle("Preview Test");
 
-        HBox hBoxBtn = new HBox();
-        hBoxBtn.setPadding(new Insets(20, 20, 30, 20));
-        hBoxBtn.setAlignment(Pos.CENTER);
-
-        Button exit = new Button("exit");
-        exit.setPrefSize(50, 20);
-        hBoxBtn.getChildren().add(exit);
+        HBox hBox = createHboxAndAppendButtons(modifyTestBtn, createBtn, previewTestBtn);
+        HBox hBoxBtn = createHboxAndAppendButtons(exit);
 
         BorderPane borderPane = new BorderPane();
+        go(borderPane, hBox, joinGrid, hBoxBtn);
 
-        borderPane.setTop(hBox);
-        borderPane.setCenter(joinGrid);
-        borderPane.setBottom(hBoxBtn);
-
-        ListView<String> list = new ListView<>();
-        list.setItems(FXCollections.observableArrayList(TestFacade.retrieveAllTestNames()));
+        ListView<String> list = createListAndFill(TestFacade.getAllTests());
         joinGrid.add(list, 0, 1);
 
         exit.setOnMouseClicked(event1 -> stage.close());
 
         createBtn.setOnMouseClicked(event -> {
-            borderPane.setTop(new HBox());
-            borderPane.setCenter(showCreateGrid(joinGrid, borderPane, hBoxBtn, list, hBox));
-            borderPane.setBottom(new HBox());
+            go(borderPane, new HBox(), showCreateGrid(joinGrid, borderPane, hBoxBtn, list, hBox), new HBox());
         });
 
         modifyTestBtn.setOnMouseClicked(event2 -> {
             String selectedTest = list.getSelectionModel().getSelectedItem();
             if (selectedTest != null) {
                 Test test = TestFacade.getTestByName(selectedTest);
-                borderPane.setTop(new HBox());
-                borderPane.setCenter(showAddQuestion(joinGrid, borderPane, hBoxBtn, list, hBox, test));
-                borderPane.setBottom(new HBox());
+                go(borderPane, new HBox(), showAddQuestion(joinGrid, borderPane, hBoxBtn, list, hBox, test), new HBox());
             }
         });
 
@@ -309,9 +263,7 @@ public class FormInterface {
             String selectedTest = list.getSelectionModel().getSelectedItem();
             if (selectedTest != null) {
                 Test test = TestFacade.getTestByName(selectedTest);
-                borderPane.setTop(new HBox());
-                borderPane.setCenter(showPreviewTest(joinGrid, borderPane, hBoxBtn, list, hBox, test));
-                borderPane.setBottom(new HBox());
+                go(borderPane, new HBox(), showPreviewTest(joinGrid, borderPane, hBoxBtn, list, hBox, test), new HBox());
             }
         });
 

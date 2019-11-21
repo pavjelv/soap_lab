@@ -2,7 +2,7 @@ package server.entity;
 
 import java.io.Serializable;
 
-public class Option implements Serializable {
+public class Option implements Serializable, Printable {
     private String optionName;
     private boolean isCorrect;
     private int addPoints;
@@ -47,5 +47,10 @@ public class Option implements Serializable {
 
     public void setRemovePoints(int removePoints) {
         this.removePoints = removePoints;
+    }
+
+    @Override
+    public String getText() {
+        return optionName;
     }
 }

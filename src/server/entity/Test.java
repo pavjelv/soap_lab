@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Test implements Serializable {
+public class Test implements Serializable, Printable {
     private String name;
     private Map<String,Question> questions = new HashMap<>();
     private Question[] questionTransport = new Question[5];
@@ -82,6 +82,11 @@ public class Test implements Serializable {
 
     public int getQuestionsCount() {
         return questionsCount;
+    }
+
+    @Override
+    public String getText() {
+        return name;
     }
 
     @Override

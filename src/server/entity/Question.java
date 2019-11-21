@@ -2,7 +2,7 @@ package server.entity;
 
 import java.io.Serializable;
 
-public class Question implements Serializable {
+public class Question implements Serializable, Printable {
 
     private String questionText;
     private String testId;
@@ -73,5 +73,10 @@ public class Question implements Serializable {
 
     public void setTestId(String testId) {
         this.testId = testId;
+    }
+
+    @Override
+    public String getText() {
+        return questionText;
     }
 }
