@@ -73,4 +73,9 @@ public class Question implements Serializable, Printable {
     public String getText() {
         return questionText;
     }
+
+    @Override
+    public String getTrimmedText() {
+        return questionText;
+    }
 }

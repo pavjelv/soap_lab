@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import server.entity.Printable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class FormUtils {
 
@@ -71,6 +72,21 @@ public final class FormUtils {
             }
         }
         listView.setItems(FXCollections.observableArrayList(qNames));
+    }
+
+    public static ListView<String> createAndFillWithTrimmedValues(Printable... items) {
+        ListView<String> listView = new ListView<>();
+        ArrayList<String> qNames = new ArrayList<>();
+        if(items == null) {
+            return listView;
+        }
+        for (Printable item : items) {
+            if (item != null && item.getTrimmedText() != null) {
+                qNames.add(item.getTrimmedText());
+            }
+        }
+        listView.setItems(FXCollections.observableArrayList(qNames));
+        return listView;
     }
 
 }

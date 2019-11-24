@@ -19,7 +19,7 @@ import static client.ui.FormUtils.createHboxAndAppendButtons;
 public class TeacherInterface {
     private Stage stage;
     private double width = 550;
-    private double height = 350;
+    private double height = 550;
 
     public TeacherInterface(Stage stage) {
         this.stage = stage;
@@ -80,8 +80,7 @@ public class TeacherInterface {
         Button okBtn = createButtonWithTitle("Create");
         okBtn.setOnMouseClicked(userConfirm -> {
             TestFacade.addQuestion(selectedTest, new Question(questionNameField.getText(), selectedTest.getName()));
-            fillList(listView, TestFacade.getAllTests());
-            go(previousPane, previousTop, previousGrid, previousBottom);
+            fillList(list, TestFacade.getQuestions(selectedTest));
         });
 
         Button backBtn = createButtonWithTitle("Back");
@@ -212,7 +211,11 @@ public class TeacherInterface {
         createGrid.add(list, 0, gridRowIndex++, 2, 1);
 
         addButton.setOnMouseClicked(event -> {
-            Option newOption = new Option(nameArea.getText(), comboBox.getSelectionModel().getSelectedItem().equals("Correct"),
+            boolean isCorrect = false;
+            if(comboBox.getSelectionModel().getSelectedIndex() >= 0) {
+                isCorrect = comboBox.getSelectionModel().getSelectedItem().equals("Correct");
+            }
+            Option newOption = new Option(nameArea.getText(), isCorrect,
                     Integer.valueOf(addPointsArea.getText()), Integer.valueOf(removePointsArea.getText()));
             TestFacade.addOption(selectedQuestion, newOption);
             fillList(list, TestFacade.retrieveAllOptions(selectedQuestion));

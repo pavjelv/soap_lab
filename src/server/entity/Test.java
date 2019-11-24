@@ -93,4 +93,8 @@ public class Test implements Serializable, Printable {
         return "Test: " + name + " questions: " + questionsCount;
     }
 
+    @Override
+    public String getTrimmedText() {
+        return name;
+    }
 }

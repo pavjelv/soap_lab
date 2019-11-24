@@ -54,6 +54,8 @@ public class FormInterface {
         btn.setOnAction(event -> {
             if (comboBox.getSelectionModel().getSelectedItem().equals("Teacher")) {
                 new TeacherInterface(stage);
+            } else {
+                new StudentInterface(stage);
             }
         });
 

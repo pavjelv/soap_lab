@@ -56,4 +56,9 @@ public class Option implements Serializable, Printable {
         }
         return optionName + " " + "add: " + addPoints + " remove: " + removePoints + (isCorrect ? " correct" : " incorrect");
     }
+
+    @Override
+    public String getTrimmedText() {
+        return optionName;
+    }
 }
