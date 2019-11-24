@@ -1,5 +1,6 @@
 package client;
 
+import server.entity.Option;
 import server.entity.Question;
 import server.entity.Test;
 import server.service.TestService;
@@ -64,5 +65,13 @@ public final class TestFacade {
 
     public static void addQuestion(Test test, Question question) {
         service.addQuestion(question, test.getName());
+    }
+
+    public static void addOption(Question question, Option option) {
+        service.addOption(question, option);
+    }
+
+    public static Option[] retrieveAllOptions(Question question) {
+        return service.retrieveAllOptions(question);
     }
 }

@@ -23,10 +23,9 @@ public class Test implements Serializable, Printable {
         if(questionsCount == questionTransport.length) {
             repack();
         }
-        questionTransport[questionsCount] = question;
-        String currentIndex = String.valueOf(questionsCount++);
-        questions.put(currentIndex, question);
-        return currentIndex;
+        questionTransport[questionsCount++] = question;
+        questions.put(question.getQuestionText(), question);
+        return question.getQuestionText();
     }
 
     public boolean addQuestions (List<Question> questions) {
@@ -34,8 +33,8 @@ public class Test implements Serializable, Printable {
             if(questionsCount == this.questionTransport.length) {
                 repack();
             }
-            this.questionTransport[questionsCount] = question;
-            this.questions.put(String.valueOf(questionsCount++), question);
+            this.questionTransport[questionsCount++] = question;
+            this.questions.put(question.getQuestionText(), question);
         }
         return true;
     }

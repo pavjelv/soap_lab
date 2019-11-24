@@ -37,4 +37,10 @@ public interface TestService {
 
     @WebMethod
     public void addQuestion(Question question, String testName);
+
+    @WebMethod
+    public void addOption(Question question, Option option);
+
+    @WebMethod
+    public Option[] retrieveAllOptions(Question question);
 }

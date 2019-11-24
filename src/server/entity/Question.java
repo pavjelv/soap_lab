@@ -6,7 +6,7 @@ public class Question implements Serializable, Printable {
 
     private String questionText;
     private String testId;
-    private Option[] options;
+    private Option[] options = new Option[10];
     private boolean correctlyAnswered;
     private int optionIndex = 0;
 
@@ -15,12 +15,6 @@ public class Question implements Serializable, Printable {
     public Question (String questionText, String testId) {
         this.questionText = questionText;
         this.testId = testId;
-        options = new Option[10];
-    }
-
-    public Question (String questionText) {
-        this.questionText = questionText;
-        options = new Option[10];
     }
 
     private void repack() {

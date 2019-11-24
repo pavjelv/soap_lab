@@ -81,4 +81,14 @@ public class TestServiceImpl implements TestService {
     public void addQuestion(Question question, String testName) {
         getTestByName(testName).addQuestion(question);
     }
+
+    @Override
+    public void addOption(Question question, Option option) {
+        getTestByName(question.getTestId()).getQuestion(question.getQuestionText()).addOption(option);
+    }
+
+    @Override
+    public Option[] retrieveAllOptions(Question question) {
+        return getTestByName(question.getTestId()).getQuestion(question.getQuestionText()).getOptions();
+    }
 }

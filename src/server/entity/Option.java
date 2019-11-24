@@ -51,6 +51,9 @@ public class Option implements Serializable, Printable {
 
     @Override
     public String getText() {
-        return optionName;
+        if(optionName == null) {
+            return null;
+        }
+        return optionName + " " + "add: " + addPoints + " remove: " + removePoints + (isCorrect ? " correct" : " incorrect");
     }
 }
