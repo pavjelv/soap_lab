@@ -5,7 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import server.entity.Test;
+import server.entity.Task;
 
 import javax.swing.*;
 
@@ -16,7 +16,7 @@ public class FormInterface {
     private double width = 550;
     private double height = 350;
 
-    private Test[] tests = new Test[0];
+    private Task[] tasks = new Task[0];
 
     private JPanel panel;
 
@@ -36,7 +36,7 @@ public class FormInterface {
 
     public void registration() {
         setWindowSize(400, 500);
-        stage.setTitle("Testing system");
+        stage.setTitle("Barbershop");
 
         GridPane grid = createGrid();
 
@@ -47,15 +47,15 @@ public class FormInterface {
         grid.add(userName, 0, 1);
 
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("Teacher", "Student");
+        comboBox.getItems().addAll("Barber", "Client");
         grid.add(comboBox, 1, 1);
 
         Button btn = createButtonWithTitle("Sign in");
         btn.setOnAction(event -> {
-            if (comboBox.getSelectionModel().getSelectedItem().equals("Teacher")) {
-                new TeacherInterface(stage);
+            if (comboBox.getSelectionModel().getSelectedItem().equals("Barber")) {
+                new BarberInterface(stage);
             } else {
-                new StudentInterface(stage);
+                new ClientInterface(stage);
             }
         });
 

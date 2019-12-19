@@ -14,6 +14,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import server.entity.Printable;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +59,9 @@ public final class FormUtils {
 
     public static ListView<String> createListAndFill(Printable... items) {
         ListView<String> list = new ListView<>();
-        fillList(list, items);
+        if(items != null) {
+            fillList(list, items);
+        }
         return list;
     }
 
@@ -74,19 +78,27 @@ public final class FormUtils {
         listView.setItems(FXCollections.observableArrayList(qNames));
     }
 
-    public static ListView<String> createAndFillWithTrimmedValues(Printable... items) {
+    public static ListView<String> createAndFillWithParsedValues(String... items) {
         ListView<String> listView = new ListView<>();
-        ArrayList<String> qNames = new ArrayList<>();
         if(items == null) {
             return listView;
         }
-        for (Printable item : items) {
-            if (item != null && item.getTrimmedText() != null) {
-                qNames.add(item.getTrimmedText());
+        listView.setItems(FXCollections.observableArrayList(parse(items)));
+        return listView;
+    }
+
+    public static List<String> parse(String... items) {
+        List<String> result = new ArrayList<>();
+        for (String item : items) {
+            String[] nameAndTime = item.split("&");
+            LocalTime date = LocalTime.ofSecondOfDay(Long.valueOf(nameAndTime[0]));
+            if(nameAndTime.length == 1) {
+                result.add(date.toString());
+            } else {
+                result.add(date + " " + nameAndTime[1]);
             }
         }
-        listView.setItems(FXCollections.observableArrayList(qNames));
-        return listView;
+        return result;
     }
 
 }
