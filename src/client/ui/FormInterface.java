@@ -5,9 +5,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import server.entity.Task;
-
-import javax.swing.*;
 
 import static client.ui.FormUtils.*;
 
@@ -15,10 +12,6 @@ public class FormInterface {
     private Stage stage;
     private double width = 550;
     private double height = 350;
-
-    private Task[] tasks = new Task[0];
-
-    private JPanel panel;
 
     public FormInterface(Stage stage) {
         this.stage = stage;
@@ -36,7 +29,7 @@ public class FormInterface {
 
     public void registration() {
         setWindowSize(400, 500);
-        stage.setTitle("Barbershop");
+        stage.setTitle("Worker System");
 
         GridPane grid = createGrid();
 
@@ -47,19 +40,19 @@ public class FormInterface {
         grid.add(userName, 0, 1);
 
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("Barber", "Client");
+        comboBox.getItems().addAll("Worker", "User");
         grid.add(comboBox, 1, 1);
 
         Button btn = createButtonWithTitle("Sign in");
         btn.setOnAction(event -> {
-            if (comboBox.getSelectionModel().getSelectedItem().equals("Barber")) {
-                new BarberInterface(stage);
+            if (comboBox.getSelectionModel().getSelectedItem().equals("Worker")) {
+                new WorkerInterface(stage);
             } else {
-                new ClientInterface(stage);
+                new UserInterface(stage);
             }
         });
 
-        grid.add(createHboxAndAppendButtons(btn), 1, 4);
+        grid.add(createHboxAndAppendButtons(btn), 0, 4);
 
         Scene scene = new Scene(grid, width, height);
         stage.setScene(scene);

@@ -2,6 +2,7 @@ package client;
 
 import server.entity.Task;
 import server.service.TaskService;
+import shared.TaskStatus;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
@@ -28,8 +29,8 @@ public final class TaskFacade {
         service.addTask(task);
     }
 
-    public static void createAndAddTask(String name, int price, Long duration) {
-        Task task = new Task(name, price, duration);
+    public static void createAndAddTask(String name, String description, String email, Long startDate) {
+        Task task = new Task(description, name, email, startDate);
         service.addTask(task);
     }
 
@@ -43,11 +44,31 @@ public final class TaskFacade {
         return result;
     }
 
+    public static Task[] getAllAppropriateTasks() {
+        return service.getAllAppropriateTasks();
+    }
+
     public static Task getTaskByName(String name) {
         return service.getTaskByName(name);
     }
 
     public static void removeTask(String name) {
         service.removeTask(name);
+    }
+
+    public static void reopenTask(String name, String newDescription) {
+        service.reopenTask(name, newDescription);
+    }
+
+    public static void closeTask(String name) {
+        service.setNewStatus(name, TaskStatus.CLOSED);
+    }
+
+    public static void setTaskToInProgress(String name) {
+        service.setNewStatus(name, TaskStatus.IN_PROGRESS);
+    }
+
+    public static void completeTask(String name, String report) {
+        service.completeTask(name, report);
     }
 }

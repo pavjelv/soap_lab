@@ -1,8 +1,11 @@
 package server.service;
 
 import server.entity.Task;
+import shared.TaskStatus;
 
 import javax.jws.WebService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +16,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public String addTask(Task task) {
-        String currentIndex = String.valueOf(count++);
+        String currentIndex = String.valueOf(count);
+        task.setId(count++);
         taskMap.put(currentIndex, task);
         return currentIndex;
     }
@@ -28,6 +32,19 @@ public class TaskServiceImpl implements TaskService {
         }
         System.out.println();
         return result;
+    }
+
+    @Override
+    public Task[] getAllAppropriateTasks() {
+        List<Task> tasks = new ArrayList<>();
+        for (Task value : taskMap.values()) {
+            if(value.getStatus() != TaskStatus.CLOSED) {
+                System.out.println(value);
+                tasks.add(value);
+            }
+        }
+        System.out.println();
+        return tasks.toArray(new Task[0]);
     }
 
     @Override
@@ -53,20 +70,30 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(Task task) {
-        //getTaskByName(task.getName()).addQuestions(Arrays.asList(task.getAllQuestions()));
+    public void reopenTask(String taskName, String newDescription) {
+        Task task = getTaskByTaskName(taskName);
+        task.setDescription(newDescription);
+        task.setStatus(TaskStatus.OPEN);
+    }
+
+    @Override
+    public void setNewStatus(String taskName, TaskStatus status) {
+        getTaskByTaskName(taskName).setStatus(status);
     }
 
     public static Task getTaskByTaskName(String name) {
         for (Task task : taskMap.values()) {
-            if (task.getName().equals(name) || task.getText().equals(name)) {
+            if (task.toString().equals(name) || task.getText().equals(name) || task.getTrimmedText().equals(name)) {
                 return task;
             }
         }
         return null;
     }
 
-    public Map<String, Task> getAllTasksAsMap() {
-        return taskMap;
+    @Override
+    public void completeTask(String name, String report) {
+        Task task = getTaskByTaskName(name);
+        task.setReport(report);
+        task.setStatus(TaskStatus.COMPLETED);
     }
 }

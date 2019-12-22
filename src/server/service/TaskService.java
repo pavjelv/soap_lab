@@ -1,6 +1,7 @@
 package server.service;
 
 import server.entity.Task;
+import shared.TaskStatus;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -22,9 +23,17 @@ public interface TaskService {
     public Task getTaskByName(String name);
 
     @WebMethod
-    public void updateTask (Task task);
-
-    @WebMethod
     public boolean removeTask (String name);
 
+    @WebMethod
+    public void reopenTask (String taskName, String newDescription);
+
+    @WebMethod
+    public void setNewStatus (String taskName, TaskStatus status);
+
+    @WebMethod
+    public Task[] getAllAppropriateTasks();
+
+    @WebMethod
+    public void completeTask(String name, String report);
 }
